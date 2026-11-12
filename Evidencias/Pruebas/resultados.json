@@ -1,0 +1,242 @@
+[
+  {
+    "n": 1,
+    "title": "1) 200 OK - Listar membresías",
+    "method": "GET",
+    "url": "/api/membresias",
+    "status": "200",
+    "file": "prueba_01_200.png"
+  },
+  {
+    "n": 2,
+    "title": "2) 200 OK - Obtener membresía por id",
+    "method": "GET",
+    "url": "/api/membresias/3",
+    "status": "200",
+    "file": "prueba_02_200.png"
+  },
+  {
+    "n": 3,
+    "title": "3) 404 Not Found - Membresía inexistente",
+    "method": "GET",
+    "url": "/api/membresias/999",
+    "status": "404",
+    "file": "prueba_03_404.png"
+  },
+  {
+    "n": 4,
+    "title": "4) 200 OK - Ruta anidada: socios de una membresía",
+    "method": "GET",
+    "url": "/api/membresias/2/socios",
+    "status": "200",
+    "file": "prueba_04_200.png"
+  },
+  {
+    "n": 5,
+    "title": "5) 404 Not Found - Ruta anidada con membresía inexistente",
+    "method": "GET",
+    "url": "/api/membresias/999/socios",
+    "status": "404",
+    "file": "prueba_05_404.png"
+  },
+  {
+    "n": 6,
+    "title": "6) 201 Created - Crear membresía (Location apunta a api/Membresias/{id})",
+    "method": "POST",
+    "url": "/api/membresias",
+    "status": "201",
+    "file": "prueba_06_201.png"
+  },
+  {
+    "n": 7,
+    "title": "7) 400 Bad Request - Datos inválidos (nombre corto, precio y duración fuera de rango)",
+    "method": "POST",
+    "url": "/api/membresias",
+    "status": "400",
+    "file": "prueba_07_400.png"
+  },
+  {
+    "n": 8,
+    "title": "8) 409 Conflict - Regla: nombre de membresía repetido",
+    "method": "POST",
+    "url": "/api/membresias",
+    "status": "409",
+    "file": "prueba_08_409.png"
+  },
+  {
+    "n": 9,
+    "title": "9) 204 No Content - Actualizar membresía",
+    "method": "PUT",
+    "url": "/api/membresias/6",
+    "status": "204",
+    "file": "prueba_09_204.png"
+  },
+  {
+    "n": 10,
+    "title": "10) 404 Not Found - Actualizar membresía inexistente",
+    "method": "PUT",
+    "url": "/api/membresias/999",
+    "status": "404",
+    "file": "prueba_10_404.png"
+  },
+  {
+    "n": 11,
+    "title": "11) 409 Conflict - Regla: no se desactiva una membresía con socios activos",
+    "method": "PUT",
+    "url": "/api/membresias/2",
+    "status": "409",
+    "file": "prueba_11_409.png"
+  },
+  {
+    "n": 12,
+    "title": "12) 409 Conflict - Regla: no se elimina una membresía con socios",
+    "method": "DELETE",
+    "url": "/api/membresias/1",
+    "status": "409",
+    "file": "prueba_12_409.png"
+  },
+  {
+    "n": 13,
+    "title": "13) 204 No Content - Eliminar membresía sin socios",
+    "method": "DELETE",
+    "url": "/api/membresias/6",
+    "status": "204",
+    "file": "prueba_13_204.png"
+  },
+  {
+    "n": 14,
+    "title": "14) 404 Not Found - Eliminar membresía inexistente",
+    "method": "DELETE",
+    "url": "/api/membresias/999",
+    "status": "404",
+    "file": "prueba_14_404.png"
+  },
+  {
+    "n": 15,
+    "title": "15) 200 OK - Listar todos los socios",
+    "method": "GET",
+    "url": "/api/socios",
+    "status": "200",
+    "file": "prueba_15_200.png"
+  },
+  {
+    "n": 16,
+    "title": "16) 200 OK - Filtros por query string (nombre, membresía y estado)",
+    "method": "GET",
+    "url": "/api/socios?nombre=a&idMembresia=2&activo=true",
+    "status": "200",
+    "file": "prueba_16_200.png"
+  },
+  {
+    "n": 17,
+    "title": "17) 200 OK - Filtro: solo socios inactivos",
+    "method": "GET",
+    "url": "/api/socios?activo=false",
+    "status": "200",
+    "file": "prueba_17_200.png"
+  },
+  {
+    "n": 18,
+    "title": "18) 200 OK - Obtener socio por id",
+    "method": "GET",
+    "url": "/api/socios/1",
+    "status": "200",
+    "file": "prueba_18_200.png"
+  },
+  {
+    "n": 19,
+    "title": "19) 404 Not Found - Socio inexistente",
+    "method": "GET",
+    "url": "/api/socios/999",
+    "status": "404",
+    "file": "prueba_19_404.png"
+  },
+  {
+    "n": 20,
+    "title": "20) 201 Created - Inscribir socio",
+    "method": "POST",
+    "url": "/api/socios",
+    "status": "201",
+    "file": "prueba_20_201.png"
+  },
+  {
+    "n": 21,
+    "title": "21) 400 Bad Request - DNI con letras, email inválido y campos faltantes",
+    "method": "POST",
+    "url": "/api/socios",
+    "status": "400",
+    "file": "prueba_21_400.png"
+  },
+  {
+    "n": 22,
+    "title": "22) 409 Conflict - Regla: DNI repetido",
+    "method": "POST",
+    "url": "/api/socios",
+    "status": "409",
+    "file": "prueba_22_409.png"
+  },
+  {
+    "n": 23,
+    "title": "23) 409 Conflict - Regla: membresía inactiva no acepta socios (Verano)",
+    "method": "POST",
+    "url": "/api/socios",
+    "status": "409",
+    "file": "prueba_23_409.png"
+  },
+  {
+    "n": 24,
+    "title": "24) 409 Conflict - Regla: edad mínima de 16 años",
+    "method": "POST",
+    "url": "/api/socios",
+    "status": "409",
+    "file": "prueba_24_409.png"
+  },
+  {
+    "n": 25,
+    "title": "25) 204 No Content - Actualizar socio (cambia de membresía y teléfono)",
+    "method": "PUT",
+    "url": "/api/socios/1",
+    "status": "204",
+    "file": "prueba_25_204.png"
+  },
+  {
+    "n": 26,
+    "title": "26) 400 Bad Request - Actualizar socio con datos inválidos",
+    "method": "PUT",
+    "url": "/api/socios/1",
+    "status": "400",
+    "file": "prueba_26_400.png"
+  },
+  {
+    "n": 27,
+    "title": "27) 404 Not Found - Actualizar socio inexistente",
+    "method": "PUT",
+    "url": "/api/socios/999",
+    "status": "404",
+    "file": "prueba_27_404.png"
+  },
+  {
+    "n": 28,
+    "title": "28) 409 Conflict - Regla: cambiar a una membresía inactiva",
+    "method": "PUT",
+    "url": "/api/socios/2",
+    "status": "409",
+    "file": "prueba_28_409.png"
+  },
+  {
+    "n": 29,
+    "title": "29) 204 No Content - Eliminar socio",
+    "method": "DELETE",
+    "url": "/api/socios/5",
+    "status": "204",
+    "file": "prueba_29_204.png"
+  },
+  {
+    "n": 30,
+    "title": "30) 404 Not Found - Eliminar socio inexistente",
+    "method": "DELETE",
+    "url": "/api/socios/999",
+    "status": "404",
+    "file": "prueba_30_404.png"
+  }
+]

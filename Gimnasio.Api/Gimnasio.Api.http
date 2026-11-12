@@ -1,0 +1,239 @@
+### =====================================================
+### Pruebas de la Gimnasio API (Semana 13)
+### Ejecutar con la extensión REST Client de VS Code
+### (clic en "Send Request" sobre cada petición)
+### Antes de probar, vuelve a correr Database/GimnasioDB.sql
+### para tener los datos de ejemplo limpios.
+### =====================================================
+
+@baseUrl = http://localhost:5091
+
+### =================== MEMBRESÍAS ===================
+
+### 1) 200 OK - Listar membresías
+GET {{baseUrl}}/api/membresias
+
+### 2) 200 OK - Obtener membresía por id
+GET {{baseUrl}}/api/membresias/3
+
+### 3) 404 Not Found - Membresía inexistente
+GET {{baseUrl}}/api/membresias/999
+
+### 4) 200 OK - Ruta anidada: socios de una membresía
+GET {{baseUrl}}/api/membresias/2/socios
+
+### 5) 404 Not Found - Ruta anidada con membresía inexistente
+GET {{baseUrl}}/api/membresias/999/socios
+
+### 6) 201 Created - Crear membresía (Location apunta a api/Membresias/{id})
+POST {{baseUrl}}/api/membresias
+Content-Type: application/json
+
+{
+  "nombre": "Estudiante",
+  "descripcion": "Sala de máquinas con descuento para universitarios",
+  "precioMensual": 59.90,
+  "duracionMeses": 4
+}
+
+### 7) 400 Bad Request - Datos inválidos (nombre corto, precio y duración fuera de rango)
+POST {{baseUrl}}/api/membresias
+Content-Type: application/json
+
+{
+  "nombre": "X",
+  "precioMensual": 5,
+  "duracionMeses": 30
+}
+
+### 8) 409 Conflict - Regla: nombre de membresía repetido
+POST {{baseUrl}}/api/membresias
+Content-Type: application/json
+
+{
+  "nombre": "Premium",
+  "precioMensual": 200,
+  "duracionMeses": 6
+}
+
+### 9) 204 No Content - Actualizar membresía
+PUT {{baseUrl}}/api/membresias/6
+Content-Type: application/json
+
+{
+  "nombre": "Estudiante Plus",
+  "descripcion": "Sala de máquinas + clases grupales para universitarios",
+  "precioMensual": 69.90,
+  "duracionMeses": 4,
+  "activo": true
+}
+
+### 10) 404 Not Found - Actualizar membresía inexistente
+PUT {{baseUrl}}/api/membresias/999
+Content-Type: application/json
+
+{
+  "nombre": "No existe",
+  "precioMensual": 50,
+  "duracionMeses": 1,
+  "activo": true
+}
+
+### 11) 409 Conflict - Regla: no se desactiva una membresía con socios activos
+PUT {{baseUrl}}/api/membresias/2
+Content-Type: application/json
+
+{
+  "nombre": "Estándar",
+  "descripcion": "Sala de máquinas + clases grupales (spinning, zumba)",
+  "precioMensual": 119.90,
+  "duracionMeses": 3,
+  "activo": false
+}
+
+### 12) 409 Conflict - Regla: no se elimina una membresía con socios
+DELETE {{baseUrl}}/api/membresias/1
+
+### 13) 204 No Content - Eliminar membresía sin socios
+DELETE {{baseUrl}}/api/membresias/6
+
+### 14) 404 Not Found - Eliminar membresía inexistente
+DELETE {{baseUrl}}/api/membresias/999
+
+
+### ===================== SOCIOS =====================
+
+### 15) 200 OK - Listar todos los socios
+GET {{baseUrl}}/api/socios
+
+### 16) 200 OK - Filtros por query string (nombre, membresía y estado)
+GET {{baseUrl}}/api/socios?nombre=a&idMembresia=2&activo=true
+
+### 17) 200 OK - Filtro: solo socios inactivos
+GET {{baseUrl}}/api/socios?activo=false
+
+### 18) 200 OK - Obtener socio por id
+GET {{baseUrl}}/api/socios/1
+
+### 19) 404 Not Found - Socio inexistente
+GET {{baseUrl}}/api/socios/999
+
+### 20) 201 Created - Inscribir socio
+POST {{baseUrl}}/api/socios
+Content-Type: application/json
+
+{
+  "dni": "78901234",
+  "nombres": "Renzo",
+  "apellidos": "Palacios Gutiérrez",
+  "email": "Renzo.Palacios@Mail.com",
+  "telefono": "981234567",
+  "fechaNacimiento": "2002-03-15",
+  "idMembresia": 3
+}
+
+### 21) 400 Bad Request - DNI con letras, email inválido y campos faltantes
+POST {{baseUrl}}/api/socios
+Content-Type: application/json
+
+{
+  "dni": "12AB",
+  "nombres": "",
+  "email": "no-es-un-email"
+}
+
+### 22) 409 Conflict - Regla: DNI repetido
+POST {{baseUrl}}/api/socios
+Content-Type: application/json
+
+{
+  "dni": "70123456",
+  "nombres": "Pedro",
+  "apellidos": "Duplicado Pérez",
+  "email": "pedro@mail.com",
+  "fechaNacimiento": "1997-05-05",
+  "idMembresia": 1
+}
+
+### 23) 409 Conflict - Regla: membresía inactiva no acepta socios (Verano)
+POST {{baseUrl}}/api/socios
+Content-Type: application/json
+
+{
+  "dni": "79012345",
+  "nombres": "Camila",
+  "apellidos": "Ortiz Vega",
+  "email": "camila.ortiz@mail.com",
+  "fechaNacimiento": "1999-10-10",
+  "idMembresia": 5
+}
+
+### 24) 409 Conflict - Regla: edad mínima de 16 años
+POST {{baseUrl}}/api/socios
+Content-Type: application/json
+
+{
+  "dni": "79123456",
+  "nombres": "Mateo",
+  "apellidos": "Ruiz Soto",
+  "email": "mateo.ruiz@mail.com",
+  "fechaNacimiento": "2015-01-20",
+  "idMembresia": 1
+}
+
+### 25) 204 No Content - Actualizar socio (cambia de membresía y teléfono)
+PUT {{baseUrl}}/api/socios/1
+Content-Type: application/json
+
+{
+  "nombres": "Carlos",
+  "apellidos": "Ramírez Torres",
+  "email": "carlos.ramirez@mail.com",
+  "telefono": "999888777",
+  "fechaNacimiento": "1998-04-12",
+  "activo": true,
+  "idMembresia": 3
+}
+
+### 26) 400 Bad Request - Actualizar socio con datos inválidos
+PUT {{baseUrl}}/api/socios/1
+Content-Type: application/json
+
+{
+  "nombres": "C",
+  "email": "correo-malo",
+  "idMembresia": 0
+}
+
+### 27) 404 Not Found - Actualizar socio inexistente
+PUT {{baseUrl}}/api/socios/999
+Content-Type: application/json
+
+{
+  "nombres": "Nadie",
+  "apellidos": "Ninguno",
+  "email": "nadie@mail.com",
+  "fechaNacimiento": "1990-01-01",
+  "activo": true,
+  "idMembresia": 1
+}
+
+### 28) 409 Conflict - Regla: cambiar a una membresía inactiva
+PUT {{baseUrl}}/api/socios/2
+Content-Type: application/json
+
+{
+  "nombres": "Lucía",
+  "apellidos": "Mendoza Paredes",
+  "email": "lucia.mendoza@mail.com",
+  "telefono": "986543210",
+  "fechaNacimiento": "2001-09-25",
+  "activo": true,
+  "idMembresia": 5
+}
+
+### 29) 204 No Content - Eliminar socio
+DELETE {{baseUrl}}/api/socios/5
+
+### 30) 404 Not Found - Eliminar socio inexistente
+DELETE {{baseUrl}}/api/socios/999
