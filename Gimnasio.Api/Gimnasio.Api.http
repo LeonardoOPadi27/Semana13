@@ -8,25 +8,102 @@
 
 @baseUrl = http://localhost:5091
 
+### S14 - 401 sin token
+GET {{baseUrl}}/api/auth/perfil
+
+### @name loginSocio
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "correo": "socio.demo@gimnasio.test",
+  "clave": "SocioDemo2026!"
+}
+
+### @name loginRecepcionista
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "correo": "recepcionista.demo@gimnasio.test",
+  "clave": "RecepcionistaDemo2026!"
+}
+
+### 401 credenciales invalidas
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "correo": "socio.demo@gimnasio.test",
+  "clave": "ClaveIncorrecta2026!"
+}
+
+### 400 registro invalido
+POST {{baseUrl}}/api/auth/registro
+Content-Type: application/json
+
+{
+  "correo": "correo-invalido",
+  "clave": "corta"
+}
+
+### @name registroS14
+POST {{baseUrl}}/api/auth/registro
+Content-Type: application/json
+
+{
+  "correo": "socio.nuevo.{{$guid}}@gimnasio.test",
+  "clave": "SocioNuevo2026!"
+}
+
+### 409 registro duplicado
+POST {{baseUrl}}/api/auth/registro
+Content-Type: application/json
+
+{
+  "correo": "socio.demo@gimnasio.test",
+  "clave": "SocioDemo2026!"
+}
+
+### 200 perfil del Socio (verifica el rol asignado por servidor)
+GET {{baseUrl}}/api/auth/perfil
+Authorization: Bearer {{loginSocio.response.body.$.token}}
+
+### 200 perfil de Recepcionista
+GET {{baseUrl}}/api/auth/perfil
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
+
+### 403 token Socio sin permiso de recepcion
+GET {{baseUrl}}/api/socios
+Authorization: Bearer {{loginSocio.response.body.$.token}}
+
+
+
 ### =================== MEMBRESÍAS ===================
 
 ### 1) 200 OK - Listar membresías
 GET {{baseUrl}}/api/membresias
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
 
 ### 2) 200 OK - Obtener membresía por id
 GET {{baseUrl}}/api/membresias/3
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
 
 ### 3) 404 Not Found - Membresía inexistente
 GET {{baseUrl}}/api/membresias/999
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
 
 ### 4) 200 OK - Ruta anidada: socios de una membresía
 GET {{baseUrl}}/api/membresias/2/socios
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
 
 ### 5) 404 Not Found - Ruta anidada con membresía inexistente
 GET {{baseUrl}}/api/membresias/999/socios
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
 
 ### 6) 201 Created - Crear membresía (Location apunta a api/Membresias/{id})
 POST {{baseUrl}}/api/membresias
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
 Content-Type: application/json
 
 {
@@ -38,6 +115,7 @@ Content-Type: application/json
 
 ### 7) 400 Bad Request - Datos inválidos (nombre corto, precio y duración fuera de rango)
 POST {{baseUrl}}/api/membresias
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
 Content-Type: application/json
 
 {
@@ -48,6 +126,7 @@ Content-Type: application/json
 
 ### 8) 409 Conflict - Regla: nombre de membresía repetido
 POST {{baseUrl}}/api/membresias
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
 Content-Type: application/json
 
 {
@@ -58,6 +137,7 @@ Content-Type: application/json
 
 ### 9) 204 No Content - Actualizar membresía
 PUT {{baseUrl}}/api/membresias/6
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
 Content-Type: application/json
 
 {
@@ -70,6 +150,7 @@ Content-Type: application/json
 
 ### 10) 404 Not Found - Actualizar membresía inexistente
 PUT {{baseUrl}}/api/membresias/999
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
 Content-Type: application/json
 
 {
@@ -81,6 +162,7 @@ Content-Type: application/json
 
 ### 11) 409 Conflict - Regla: no se desactiva una membresía con socios activos
 PUT {{baseUrl}}/api/membresias/2
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
 Content-Type: application/json
 
 {
@@ -93,33 +175,42 @@ Content-Type: application/json
 
 ### 12) 409 Conflict - Regla: no se elimina una membresía con socios
 DELETE {{baseUrl}}/api/membresias/1
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
 
 ### 13) 204 No Content - Eliminar membresía sin socios
 DELETE {{baseUrl}}/api/membresias/6
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
 
 ### 14) 404 Not Found - Eliminar membresía inexistente
 DELETE {{baseUrl}}/api/membresias/999
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
 
 
 ### ===================== SOCIOS =====================
 
 ### 15) 200 OK - Listar todos los socios
 GET {{baseUrl}}/api/socios
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
 
 ### 16) 200 OK - Filtros por query string (nombre, membresía y estado)
 GET {{baseUrl}}/api/socios?nombre=a&idMembresia=2&activo=true
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
 
 ### 17) 200 OK - Filtro: solo socios inactivos
 GET {{baseUrl}}/api/socios?activo=false
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
 
 ### 18) 200 OK - Obtener socio por id
 GET {{baseUrl}}/api/socios/1
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
 
 ### 19) 404 Not Found - Socio inexistente
 GET {{baseUrl}}/api/socios/999
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
 
 ### 20) 201 Created - Inscribir socio
 POST {{baseUrl}}/api/socios
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
 Content-Type: application/json
 
 {
@@ -134,6 +225,7 @@ Content-Type: application/json
 
 ### 21) 400 Bad Request - DNI con letras, email inválido y campos faltantes
 POST {{baseUrl}}/api/socios
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
 Content-Type: application/json
 
 {
@@ -144,6 +236,7 @@ Content-Type: application/json
 
 ### 22) 409 Conflict - Regla: DNI repetido
 POST {{baseUrl}}/api/socios
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
 Content-Type: application/json
 
 {
@@ -157,6 +250,7 @@ Content-Type: application/json
 
 ### 23) 409 Conflict - Regla: membresía inactiva no acepta socios (Verano)
 POST {{baseUrl}}/api/socios
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
 Content-Type: application/json
 
 {
@@ -170,6 +264,7 @@ Content-Type: application/json
 
 ### 24) 409 Conflict - Regla: edad mínima de 16 años
 POST {{baseUrl}}/api/socios
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
 Content-Type: application/json
 
 {
@@ -183,6 +278,7 @@ Content-Type: application/json
 
 ### 25) 204 No Content - Actualizar socio (cambia de membresía y teléfono)
 PUT {{baseUrl}}/api/socios/1
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
 Content-Type: application/json
 
 {
@@ -197,6 +293,7 @@ Content-Type: application/json
 
 ### 26) 400 Bad Request - Actualizar socio con datos inválidos
 PUT {{baseUrl}}/api/socios/1
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
 Content-Type: application/json
 
 {
@@ -207,6 +304,7 @@ Content-Type: application/json
 
 ### 27) 404 Not Found - Actualizar socio inexistente
 PUT {{baseUrl}}/api/socios/999
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
 Content-Type: application/json
 
 {
@@ -220,6 +318,7 @@ Content-Type: application/json
 
 ### 28) 409 Conflict - Regla: cambiar a una membresía inactiva
 PUT {{baseUrl}}/api/socios/2
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
 Content-Type: application/json
 
 {
@@ -234,6 +333,269 @@ Content-Type: application/json
 
 ### 29) 204 No Content - Eliminar socio
 DELETE {{baseUrl}}/api/socios/5
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
 
 ### 30) 404 Not Found - Eliminar socio inexistente
 DELETE {{baseUrl}}/api/socios/999
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
+
+
+### =================== MEMBRESÍAS ===================
+
+### 1) 200 OK - Listar membresías
+GET {{baseUrl}}/api/membresias
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
+
+### 2) 200 OK - Obtener membresía por id
+GET {{baseUrl}}/api/membresias/3
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
+
+### 3) 404 Not Found - Membresía inexistente
+GET {{baseUrl}}/api/membresias/999
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
+
+### 4) 200 OK - Ruta anidada: socios de una membresía
+GET {{baseUrl}}/api/membresias/2/socios
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
+
+### 5) 404 Not Found - Ruta anidada con membresía inexistente
+GET {{baseUrl}}/api/membresias/999/socios
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
+
+### 6) 201 Created - Crear membresía (Location apunta a api/Membresias/{id})
+POST {{baseUrl}}/api/membresias
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "nombre": "Estudiante",
+  "descripcion": "Sala de máquinas con descuento para universitarios",
+  "precioMensual": 59.90,
+  "duracionMeses": 4
+}
+
+### 7) 400 Bad Request - Datos inválidos (nombre corto, precio y duración fuera de rango)
+POST {{baseUrl}}/api/membresias
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "nombre": "X",
+  "precioMensual": 5,
+  "duracionMeses": 30
+}
+
+### 8) 409 Conflict - Regla: nombre de membresía repetido
+POST {{baseUrl}}/api/membresias
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "nombre": "Premium",
+  "precioMensual": 200,
+  "duracionMeses": 6
+}
+
+### 9) 204 No Content - Actualizar membresía
+PUT {{baseUrl}}/api/membresias/6
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "nombre": "Estudiante Plus",
+  "descripcion": "Sala de máquinas + clases grupales para universitarios",
+  "precioMensual": 69.90,
+  "duracionMeses": 4,
+  "activo": true
+}
+
+### 10) 404 Not Found - Actualizar membresía inexistente
+PUT {{baseUrl}}/api/membresias/999
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "nombre": "No existe",
+  "precioMensual": 50,
+  "duracionMeses": 1,
+  "activo": true
+}
+
+### 11) 409 Conflict - Regla: no se desactiva una membresía con socios activos
+PUT {{baseUrl}}/api/membresias/2
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "nombre": "Estándar",
+  "descripcion": "Sala de máquinas + clases grupales (spinning, zumba)",
+  "precioMensual": 119.90,
+  "duracionMeses": 3,
+  "activo": false
+}
+
+### 12) 409 Conflict - Regla: no se elimina una membresía con socios
+DELETE {{baseUrl}}/api/membresias/1
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
+
+### 13) 204 No Content - Eliminar membresía sin socios
+DELETE {{baseUrl}}/api/membresias/6
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
+
+### 14) 404 Not Found - Eliminar membresía inexistente
+DELETE {{baseUrl}}/api/membresias/999
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
+
+
+### ===================== SOCIOS =====================
+
+### 15) 200 OK - Listar todos los socios
+GET {{baseUrl}}/api/socios
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
+
+### 16) 200 OK - Filtros por query string (nombre, membresía y estado)
+GET {{baseUrl}}/api/socios?nombre=a&idMembresia=2&activo=true
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
+
+### 17) 200 OK - Filtro: solo socios inactivos
+GET {{baseUrl}}/api/socios?activo=false
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
+
+### 18) 200 OK - Obtener socio por id
+GET {{baseUrl}}/api/socios/1
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
+
+### 19) 404 Not Found - Socio inexistente
+GET {{baseUrl}}/api/socios/999
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
+
+### 20) 201 Created - Inscribir socio
+POST {{baseUrl}}/api/socios
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "dni": "78901234",
+  "nombres": "Renzo",
+  "apellidos": "Palacios Gutiérrez",
+  "email": "Renzo.Palacios@Mail.com",
+  "telefono": "981234567",
+  "fechaNacimiento": "2002-03-15",
+  "idMembresia": 3
+}
+
+### 21) 400 Bad Request - DNI con letras, email inválido y campos faltantes
+POST {{baseUrl}}/api/socios
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "dni": "12AB",
+  "nombres": "",
+  "email": "no-es-un-email"
+}
+
+### 22) 409 Conflict - Regla: DNI repetido
+POST {{baseUrl}}/api/socios
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "dni": "70123456",
+  "nombres": "Pedro",
+  "apellidos": "Duplicado Pérez",
+  "email": "pedro@mail.com",
+  "fechaNacimiento": "1997-05-05",
+  "idMembresia": 1
+}
+
+### 23) 409 Conflict - Regla: membresía inactiva no acepta socios (Verano)
+POST {{baseUrl}}/api/socios
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "dni": "79012345",
+  "nombres": "Camila",
+  "apellidos": "Ortiz Vega",
+  "email": "camila.ortiz@mail.com",
+  "fechaNacimiento": "1999-10-10",
+  "idMembresia": 5
+}
+
+### 24) 409 Conflict - Regla: edad mínima de 16 años
+POST {{baseUrl}}/api/socios
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "dni": "79123456",
+  "nombres": "Mateo",
+  "apellidos": "Ruiz Soto",
+  "email": "mateo.ruiz@mail.com",
+  "fechaNacimiento": "2015-01-20",
+  "idMembresia": 1
+}
+
+### 25) 204 No Content - Actualizar socio (cambia de membresía y teléfono)
+PUT {{baseUrl}}/api/socios/1
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "nombres": "Carlos",
+  "apellidos": "Ramírez Torres",
+  "email": "carlos.ramirez@mail.com",
+  "telefono": "999888777",
+  "fechaNacimiento": "1998-04-12",
+  "activo": true,
+  "idMembresia": 3
+}
+
+### 26) 400 Bad Request - Actualizar socio con datos inválidos
+PUT {{baseUrl}}/api/socios/1
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "nombres": "C",
+  "email": "correo-malo",
+  "idMembresia": 0
+}
+
+### 27) 404 Not Found - Actualizar socio inexistente
+PUT {{baseUrl}}/api/socios/999
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "nombres": "Nadie",
+  "apellidos": "Ninguno",
+  "email": "nadie@mail.com",
+  "fechaNacimiento": "1990-01-01",
+  "activo": true,
+  "idMembresia": 1
+}
+
+### 28) 409 Conflict - Regla: cambiar a una membresía inactiva
+PUT {{baseUrl}}/api/socios/2
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "nombres": "Lucía",
+  "apellidos": "Mendoza Paredes",
+  "email": "lucia.mendoza@mail.com",
+  "telefono": "986543210",
+  "fechaNacimiento": "2001-09-25",
+  "activo": true,
+  "idMembresia": 5
+}
+
+### 29) 204 No Content - Eliminar socio
+DELETE {{baseUrl}}/api/socios/5
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
+
+### 30) 404 Not Found - Eliminar socio inexistente
+DELETE {{baseUrl}}/api/socios/999
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}

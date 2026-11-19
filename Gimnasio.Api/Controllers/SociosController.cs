@@ -1,4 +1,6 @@
+using Gimnasio.Entidades;
 using Gimnasio.Entidades.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Gimnasio.Negocio.Excepciones;
 using Gimnasio.Negocio.Servicios;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Gimnasio.Api.Controllers;
 
 [ApiController]
+[Authorize(Roles = Roles.Recepcionista)]
 [Route("api/[controller]")]
 [Produces("application/json")]
 public class SociosController : ControllerBase

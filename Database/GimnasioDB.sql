@@ -51,6 +51,21 @@ CREATE TABLE Socio (
 );
 GO
 
+/* ---------- Tabla Usuario para autenticacion JWT ---------- */
+CREATE TABLE Usuario (
+    IdUsuario INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_Usuario PRIMARY KEY,
+    Correo NVARCHAR(100) NOT NULL,
+    ClaveHash NVARCHAR(100) NOT NULL,
+    Rol NVARCHAR(20) NOT NULL,
+    CONSTRAINT UQ_Usuario_Correo UNIQUE (Correo),
+    CONSTRAINT CK_Usuario_Rol CHECK (Rol IN (N'Socio', N'Recepcionista'))
+);
+GO
+
+INSERT INTO Usuario (Correo, ClaveHash, Rol) VALUES
+ (N'socio.demo@gimnasio.test', N'$2a$12$L1J2IVWLLpQcAUOYp7EqJOxz/E7Ou2mHxmisK58eQktZHZeoOW8qy', N'Socio'),
+ (N'recepcionista.demo@gimnasio.test', N'$2a$12$uOORf5QA5lNccCCgnbNCCeoKSDOaSXy1undeSLqqxKFOxWDkPAeWm', N'Recepcionista');
+GO
 /* ---------- Datos de ejemplo ---------- */
 INSERT INTO Membresia (Nombre, Descripcion, PrecioMensual, DuracionMeses, Activo) VALUES
  (N'Básico',   N'Acceso a sala de máquinas en horario regular',            79.90,  1, 1),

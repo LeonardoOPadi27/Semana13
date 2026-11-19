@@ -1,4 +1,6 @@
+using Gimnasio.Entidades;
 using Gimnasio.Entidades.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Gimnasio.Negocio.Excepciones;
 using Gimnasio.Negocio.Servicios;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Gimnasio.Api.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
 [Produces("application/json")]
 public class MembresiasController : ControllerBase
@@ -40,6 +43,7 @@ public class MembresiasController : ControllerBase
     }
 
     /// <summary>Ruta anidada: socios inscritos en una membresía.</summary>
+    [Authorize(Roles = Roles.Recepcionista)]
     [HttpGet("{id:int}/socios")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -53,6 +57,7 @@ public class MembresiasController : ControllerBase
     }
 
     /// <summary>Crea una membresía nueva (nace activa).</summary>
+    [Authorize(Roles = Roles.Recepcionista)]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -71,6 +76,7 @@ public class MembresiasController : ControllerBase
     }
 
     /// <summary>Actualiza una membresía existente.</summary>
+    [Authorize(Roles = Roles.Recepcionista)]
     [HttpPut("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -93,6 +99,7 @@ public class MembresiasController : ControllerBase
     }
 
     /// <summary>Elimina una membresía (solo si no tiene socios).</summary>
+    [Authorize(Roles = Roles.Recepcionista)]
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
