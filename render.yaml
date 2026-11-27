@@ -1,0 +1,39 @@
+# Blueprint de Render (Semana 15): gateway + API del gimnasio + microservicio de entrenadores.
+# Render > New > Blueprint > elegir este repositorio. Solo pedira la cadena de conexion.
+# La clave JWT se genera una vez en el grupo "jwt-gimnasio" y la comparten los tres servicios.
+
+envVarGroups:
+  - name: jwt-gimnasio
+    envVars:
+      - key: Jwt__SecretKey
+        generateValue: true
+
+services:
+  - type: web
+    name: gimnasio-api-s15
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Gimnasio.Api/Dockerfile
+    dockerContext: .
+    envVars:
+      - fromGroup: jwt-gimnasio
+      - key: ConnectionStrings__GimnasioDB
+        sync: false
+
+  - type: web
+    name: gimnasio-entrenadores-s15
+    runtime: docker
+    plan: free
+    dockerfilePath: ./EntrenadoresApi/Dockerfile
+    dockerContext: .
+    envVars:
+      - fromGroup: jwt-gimnasio
+
+  - type: web
+    name: gimnasio-gateway-s15
+    runtime: docker
+    plan: free
+    dockerfilePath: ./GatewayApi/Dockerfile
+    dockerContext: .
+    envVars:
+      - fromGroup: jwt-gimnasio

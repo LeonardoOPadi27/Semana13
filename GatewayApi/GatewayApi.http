@@ -1,0 +1,146 @@
+### =====================================================
+### Pruebas de la Semana 15: todo pasa por el API Gateway (Ocelot)
+### Ejecutar con REST Client de VS Code ("Send Request").
+### Levantar antes los tres servicios:
+###   dotnet run --project Gimnasio.Api --launch-profile http      (5091)
+###   dotnet run --project EntrenadoresApi --launch-profile http   (5092)
+###   dotnet run --project GatewayApi --launch-profile http        (5100)
+### Para la nube, cambia @gateway y @servicio2 por las direcciones publicadas.
+### =====================================================
+
+@gateway = http://localhost:5100/gateway
+@servicio2 = http://localhost:5092
+
+### 01 - 200 Login de Recepcionista (ruta publica)
+# @name loginRecepcionista
+POST {{gateway}}/auth/login
+Content-Type: application/json
+
+{
+  "correo": "recepcionista.demo@gimnasio.test",
+  "clave": "RecepcionistaDemo2026!"
+}
+
+### 02 - 200 Login de Socio (ruta publica)
+# @name loginSocio
+POST {{gateway}}/auth/login
+Content-Type: application/json
+
+{
+  "correo": "socio.demo@gimnasio.test",
+  "clave": "SocioDemo2026!"
+}
+
+### 03 - 201 Registro de un socio nuevo (ruta publica)
+POST {{gateway}}/auth/registro
+Content-Type: application/json
+
+{
+  "correo": "socio.gateway.{{$randomInt 1000 9999}}@gimnasio.test",
+  "clave": "SocioGateway2026!"
+}
+
+### 04 - 200 Lista de membresias (GET publico en el gateway, la API pide token)
+GET {{gateway}}/membresias
+Authorization: Bearer {{loginSocio.response.body.$.token}}
+
+### 05 - 401 Lista de membresias sin token (el gateway deja pasar, la API responde 401)
+GET {{gateway}}/membresias
+
+### 06 - 200 Socios con filtros por query string (el gateway reenvia ?nombre=&activo=)
+GET {{gateway}}/socios?nombre=a&activo=true
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
+
+### 07 - 403 Socio intenta listar socios (el rol lo exige la API)
+GET {{gateway}}/socios
+Authorization: Bearer {{loginSocio.response.body.$.token}}
+
+### 08 - 401 Crear membresia sin token (lo corta el gateway)
+POST {{gateway}}/membresias
+Content-Type: application/json
+
+{
+  "nombre": "Nocturna",
+  "descripcion": "Acceso de 8 p. m. a 11 p. m.",
+  "precioMensual": 60,
+  "duracionMeses": 1
+}
+
+### 09 - 403 Socio intenta crear una membresia (token valido, rol insuficiente)
+POST {{gateway}}/membresias
+Authorization: Bearer {{loginSocio.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "nombre": "Nocturna",
+  "descripcion": "Acceso de 8 p. m. a 11 p. m.",
+  "precioMensual": 60,
+  "duracionMeses": 1
+}
+
+### 10 - 201 Recepcionista crea una membresia
+# @name crearMembresia
+POST {{gateway}}/membresias
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "nombre": "Nocturna",
+  "descripcion": "Acceso de 8 p. m. a 11 p. m.",
+  "precioMensual": 60,
+  "duracionMeses": 1
+}
+
+### 11 - 204 Recepcionista actualiza la membresia creada
+PUT {{gateway}}/membresias/{{crearMembresia.response.body.$.idMembresia}}
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "nombre": "Nocturna Plus",
+  "descripcion": "Acceso de 8 p. m. a 11 p. m. con casillero",
+  "precioMensual": 75,
+  "duracionMeses": 1,
+  "activo": true
+}
+
+### 12 - 204 Recepcionista elimina la membresia creada
+DELETE {{gateway}}/membresias/{{crearMembresia.response.body.$.idMembresia}}
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
+
+### 13 - 404 Membresia que no existe
+GET {{gateway}}/membresias/999
+Authorization: Bearer {{loginRecepcionista.response.body.$.token}}
+
+### 14 - 200 Microservicio 2: lista de entrenadores por el gateway
+GET {{gateway}}/entrenadores
+Authorization: Bearer {{loginSocio.response.body.$.token}}
+
+### 15 - 200 Microservicio 2: entrenador por id
+GET {{gateway}}/entrenadores/4
+Authorization: Bearer {{loginSocio.response.body.$.token}}
+
+### 16 - 200 Microservicio 2: filtro por especialidad
+GET {{gateway}}/entrenadores?especialidad=yoga
+Authorization: Bearer {{loginSocio.response.body.$.token}}
+
+### 17 - 404 Microservicio 2: entrenador que no existe
+GET {{gateway}}/entrenadores/99
+Authorization: Bearer {{loginSocio.response.body.$.token}}
+
+### 18 - 401 Microservicio 2 por el gateway sin token (lo corta el gateway)
+GET {{gateway}}/entrenadores
+
+### 19 - 401 Llamada DIRECTA al microservicio 2 sin token (el servicio tambien valida)
+GET {{servicio2}}/api/entrenadores
+
+### 20 - 404 Ruta que no existe en ocelot.json
+GET {{gateway}}/pagos
+
+### 21 - 502 Microservicio 2 detenido (detener EntrenadoresApi antes de enviar)
+GET {{gateway}}/entrenadores
+Authorization: Bearer {{loginSocio.response.body.$.token}}
+
+### 22 - 200 La API sigue funcionando con el microservicio 2 detenido
+GET {{gateway}}/membresias/1
+Authorization: Bearer {{loginSocio.response.body.$.token}}

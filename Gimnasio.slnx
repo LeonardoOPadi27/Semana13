@@ -1,4 +1,6 @@
 <Solution>
+  <Project Path="EntrenadoresApi/EntrenadoresApi.csproj" />
+  <Project Path="GatewayApi/GatewayApi.csproj" />
   <Project Path="Gimnasio.Api/Gimnasio.Api.csproj" />
   <Project Path="Gimnasio.Datos/Gimnasio.Datos.csproj" />
   <Project Path="Gimnasio.Entidades/Gimnasio.Entidades.csproj" />

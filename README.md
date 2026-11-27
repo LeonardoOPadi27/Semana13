@@ -119,3 +119,52 @@ Las altas protegidas de membresias y socios requieren `Recepcionista`; las regla
 ### Pruebas S14
 
 Las peticiones de autenticacion y autorizacion se agregan al inicio de `Gimnasio.Api/Gimnasio.Api.http`. Ejecuta los requests `loginSocio` y `loginRecepcionista` para cargar las variables de token; las 30 peticiones S13 continuan con token de Recepcionista. El archivo contiene casos para 200, 201, 204, 400, 401, 403, 404 y 409.
+
+## Semana 15 - API Gateway con Ocelot
+
+El cliente ya no llama a la API: todo entra por `GatewayApi` (Ocelot 25), que reenvia a dos microservicios.
+
+| Proyecto | Rol | Puerto local |
+|---|---|---|
+| `GatewayApi` | API Gateway (Ocelot + validacion JWT) | 5100 |
+| `Gimnasio.Api` | Microservicio 1: API de la S14, sin cambios | 5091 |
+| `EntrenadoresApi` | Microservicio 2: entrenadores en memoria, exige JWT | 5092 |
+
+### Rutas (`GatewayApi/ocelot.json`)
+
+| Upstream (cliente -> gateway) | Metodo | Downstream | Token en el gateway |
+|---|---|---|---|
+| `/gateway/auth/{everything}` | POST, GET | `localhost:5091 /api/auth/{everything}` | No |
+| `/gateway/membresias{everything}` | GET | `localhost:5091 /api/membresias{everything}` | No (la API lo pide) |
+| `/gateway/membresias{everything}` | POST, PUT, DELETE | `localhost:5091 /api/membresias{everything}` | Si |
+| `/gateway/socios{everything}` | GET | `localhost:5091 /api/socios{everything}` | No (la API lo pide) |
+| `/gateway/socios{everything}` | POST, PUT, DELETE | `localhost:5091 /api/socios{everything}` | Si |
+| `/gateway/entrenadores{everything}` | GET | `localhost:5092 /api/entrenadores{everything}` | Si |
+
+En la nube el gateway corre con `ASPNETCORE_ENVIRONMENT=Production` y carga ademas `ocelot.Production.json` (hosts publicos, https y puerto 443).
+
+### Ejecutar en local
+
+Los tres servicios usan la misma `Jwt:SecretKey` (minimo 32 caracteres), que no se sube al repositorio:
+
+```powershell
+dotnet user-secrets set "Jwt:SecretKey" "<misma clave en los tres>" --project Gimnasio.Api
+dotnet user-secrets set "Jwt:SecretKey" "<misma clave en los tres>" --project GatewayApi
+dotnet user-secrets set "Jwt:SecretKey" "<misma clave en los tres>" --project EntrenadoresApi
+```
+
+Luego, cada uno en su propia terminal:
+
+```powershell
+dotnet run --project Gimnasio.Api --launch-profile http
+dotnet run --project EntrenadoresApi --launch-profile http
+dotnet run --project GatewayApi --launch-profile http
+```
+
+Las 22 pruebas por el gateway (200, 201, 204, 401, 403, 404 y 502) estan en `GatewayApi/GatewayApi.http`.
+
+### Publicacion en la nube
+
+- **Hosting:** Render, tres Web Services gratuitos con Docker (`render.yaml` y un `Dockerfile` por servicio). La clave JWT se genera en el grupo de variables `jwt-gimnasio` y la comparten los tres.
+- **Base de datos:** SQL Server gratuito en MonsterASP.NET. Se crea con `Database/GimnasioDB_Nube.sql` (igual al script local, sin `CREATE DATABASE`).
+- **Secretos:** `ConnectionStrings__GimnasioDB` y `Jwt__SecretKey` son variables de entorno en Render; no estan en el repositorio.
