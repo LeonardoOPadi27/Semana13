@@ -1,0 +1,200 @@
+[
+    {
+        "n":  1,
+        "title":  "200 Login de Recepcionista (ruta publica)",
+        "method":  "POST",
+        "ruta":  "/gateway/auth/login",
+        "status":  200,
+        "ms":  2722,
+        "file":  "prueba_01_200.png"
+    },
+    {
+        "n":  2,
+        "title":  "200 Login de Socio (ruta publica)",
+        "method":  "POST",
+        "ruta":  "/gateway/auth/login",
+        "status":  200,
+        "ms":  4152,
+        "file":  "prueba_02_200.png"
+    },
+    {
+        "n":  3,
+        "title":  "201 Registro de un socio nuevo (ruta publica)",
+        "method":  "POST",
+        "ruta":  "/gateway/auth/registro",
+        "status":  201,
+        "ms":  2582,
+        "file":  "prueba_03_201.png"
+    },
+    {
+        "n":  4,
+        "title":  "200 Lista de membresias (GET publico en el gateway, la API pide token)",
+        "method":  "GET",
+        "ruta":  "/gateway/membresias",
+        "status":  200,
+        "ms":  3081,
+        "file":  "prueba_04_200.png"
+    },
+    {
+        "n":  5,
+        "title":  "401 Lista de membresias sin token (el gateway deja pasar, la API responde 401)",
+        "method":  "GET",
+        "ruta":  "/gateway/membresias",
+        "status":  401,
+        "ms":  344,
+        "file":  "prueba_05_401.png"
+    },
+    {
+        "n":  6,
+        "title":  "200 Socios con filtros por query string (el gateway reenvia ?nombre=\u0026activo=)",
+        "method":  "GET",
+        "ruta":  "/gateway/socios?nombre=a\u0026activo=true",
+        "status":  200,
+        "ms":  1112,
+        "file":  "prueba_06_200.png"
+    },
+    {
+        "n":  7,
+        "title":  "403 Socio intenta listar socios (el rol lo exige la API)",
+        "method":  "GET",
+        "ruta":  "/gateway/socios",
+        "status":  403,
+        "ms":  354,
+        "file":  "prueba_07_403.png"
+    },
+    {
+        "n":  8,
+        "title":  "401 Crear membresia sin token (lo corta el gateway)",
+        "method":  "POST",
+        "ruta":  "/gateway/membresias",
+        "status":  401,
+        "ms":  344,
+        "file":  "prueba_08_401.png"
+    },
+    {
+        "n":  9,
+        "title":  "403 Socio intenta crear una membresia (token valido, rol insuficiente)",
+        "method":  "POST",
+        "ruta":  "/gateway/membresias",
+        "status":  403,
+        "ms":  403,
+        "file":  "prueba_09_403.png"
+    },
+    {
+        "n":  10,
+        "title":  "201 Recepcionista crea una membresia",
+        "method":  "POST",
+        "ruta":  "/gateway/membresias",
+        "status":  201,
+        "ms":  1075,
+        "file":  "prueba_10_201.png"
+    },
+    {
+        "n":  11,
+        "title":  "204 Recepcionista actualiza la membresia creada",
+        "method":  "PUT",
+        "ruta":  "/gateway/membresias/6",
+        "status":  204,
+        "ms":  1069,
+        "file":  "prueba_11_204.png"
+    },
+    {
+        "n":  12,
+        "title":  "204 Recepcionista elimina la membresia creada",
+        "method":  "DELETE",
+        "ruta":  "/gateway/membresias/6",
+        "status":  204,
+        "ms":  884,
+        "file":  "prueba_12_204.png"
+    },
+    {
+        "n":  13,
+        "title":  "404 Membresia que no existe",
+        "method":  "GET",
+        "ruta":  "/gateway/membresias/999",
+        "status":  404,
+        "ms":  554,
+        "file":  "prueba_13_404.png"
+    },
+    {
+        "n":  14,
+        "title":  "200 Microservicio 2: lista de entrenadores por el gateway",
+        "method":  "GET",
+        "ruta":  "/gateway/entrenadores",
+        "status":  200,
+        "ms":  670,
+        "file":  "prueba_14_200.png"
+    },
+    {
+        "n":  15,
+        "title":  "200 Microservicio 2: entrenador por id",
+        "method":  "GET",
+        "ruta":  "/gateway/entrenadores/4",
+        "status":  200,
+        "ms":  348,
+        "file":  "prueba_15_200.png"
+    },
+    {
+        "n":  16,
+        "title":  "200 Microservicio 2: filtro por especialidad",
+        "method":  "GET",
+        "ruta":  "/gateway/entrenadores?especialidad=yoga",
+        "status":  200,
+        "ms":  325,
+        "file":  "prueba_16_200.png"
+    },
+    {
+        "n":  17,
+        "title":  "404 Microservicio 2: entrenador que no existe",
+        "method":  "GET",
+        "ruta":  "/gateway/entrenadores/99",
+        "status":  404,
+        "ms":  363,
+        "file":  "prueba_17_404.png"
+    },
+    {
+        "n":  18,
+        "title":  "401 Microservicio 2 por el gateway sin token (lo corta el gateway)",
+        "method":  "GET",
+        "ruta":  "/gateway/entrenadores",
+        "status":  401,
+        "ms":  290,
+        "file":  "prueba_18_401.png"
+    },
+    {
+        "n":  19,
+        "title":  "401 Llamada DIRECTA al microservicio 2 sin token (el servicio tambien valida)",
+        "method":  "GET",
+        "ruta":  "/api/entrenadores",
+        "status":  401,
+        "ms":  758,
+        "file":  "prueba_19_401.png"
+    },
+    {
+        "n":  20,
+        "title":  "404 Ruta que no existe en ocelot.json",
+        "method":  "GET",
+        "ruta":  "/gateway/pagos",
+        "status":  404,
+        "ms":  296,
+        "file":  "prueba_20_404.png"
+    },
+    {
+        "n":  21,
+        "title":  "502 Microservicio 2 detenido (detener EntrenadoresApi antes de enviar)",
+        "method":  "GET",
+        "ruta":  "/gateway/entrenadores",
+        "status":  503,
+        "ms":  376,
+        "file":  "prueba_21_503.png"
+    },
+    {
+        "n":  22,
+        "title":  "200 La API sigue funcionando con el microservicio 2 detenido",
+        "method":  "GET",
+        "ruta":  "/gateway/membresias/1",
+        "status":  200,
+        "ms":  640,
+        "file":  "prueba_22_200.png"
+    }
+]

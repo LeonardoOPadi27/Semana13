@@ -168,3 +168,10 @@ Las 22 pruebas por el gateway (200, 201, 204, 401, 403, 404 y 502) estan en `Gat
 - **Hosting:** Render, tres Web Services gratuitos con Docker (`render.yaml` y un `Dockerfile` por servicio). La clave JWT se genera en el grupo de variables `jwt-gimnasio` y la comparten los tres.
 - **Base de datos:** SQL Server gratuito en MonsterASP.NET. Se crea con `Database/GimnasioDB_Nube.sql` (igual al script local, sin `CREATE DATABASE`).
 - **Secretos:** `ConnectionStrings__GimnasioDB` y `Jwt__SecretKey` son variables de entorno en Render; no estan en el repositorio.
+### Direcciones publicadas
+
+- Gateway: https://gimnasio-gateway-s15-2hik.onrender.com/gateway/...
+- Microservicio 1 (Gimnasio.Api): https://gimnasio-api-s15-aeyf.onrender.com
+- Microservicio 2 (EntrenadoresApi): https://gimnasio-entrenadores-s15-9eng.onrender.com
+
+En el plan gratuito de Render el primer request despues de un rato sin uso puede tardar cerca de un minuto. Al suspender un servicio en Render, su proxy responde 503 y el gateway reenvia ese codigo; el 502 de Ocelot se ve en local al detener el proceso.
