@@ -1,0 +1,444 @@
+{
+  "info": {
+    "name": "Gimnasio S15 - API Gateway",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Pruebas de la Semana 15 por el gateway Ocelot. Ejecutar en orden: los logins guardan el token."
+  },
+  "variable": [
+    {
+      "key": "gateway",
+      "value": "https://gimnasio-gateway-s15-2hik.onrender.com/gateway"
+    },
+    {
+      "key": "servicio2",
+      "value": "https://gimnasio-entrenadores-s15-9eng.onrender.com"
+    },
+    {
+      "key": "tokenRecepcionista",
+      "value": ""
+    },
+    {
+      "key": "tokenSocio",
+      "value": ""
+    },
+    {
+      "key": "tokenLocal",
+      "value": ""
+    },
+    {
+      "key": "idMembresia",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Nube (gateway publicado)",
+      "item": [
+        {
+          "name": "01 · 200 Login Recepcionista",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"recepcionista.demo@gimnasio.test\",\n  \"clave\": \"RecepcionistaDemo2026!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) pm.collectionVariables.set('tokenRecepcionista', pm.response.json().token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02 · 200 Login Socio",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"socio.demo@gimnasio.test\",\n  \"clave\": \"SocioDemo2026!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) pm.collectionVariables.set('tokenSocio', pm.response.json().token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03 · 201 Registro de socio nuevo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/auth/registro",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"socio.video{{$randomInt}}@gimnasio.test\",\n  \"clave\": \"SocioVideo2026!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "04 · 200 Membresias con token",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenSocio}}"
+              }
+            ],
+            "url": "{{gateway}}/membresias"
+          }
+        },
+        {
+          "name": "05 · 401 Membresias sin token (lo dice la API)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{gateway}}/membresias"
+          }
+        },
+        {
+          "name": "06 · 200 Socios con filtros (Recepcionista)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenRecepcionista}}"
+              }
+            ],
+            "url": "{{gateway}}/socios?nombre=a&activo=true"
+          }
+        },
+        {
+          "name": "07 · 403 Socio intenta ver socios",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenSocio}}"
+              }
+            ],
+            "url": "{{gateway}}/socios"
+          }
+        },
+        {
+          "name": "08 · 401 Crear membresia sin token (lo corta el gateway)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/membresias",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Video {{$randomInt}}\",\n  \"descripcion\": \"Membresia creada en la sustentacion\",\n  \"precioMensual\": 60,\n  \"duracionMeses\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "09 · 403 Socio intenta crear membresia",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenSocio}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/membresias",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Video {{$randomInt}}\",\n  \"descripcion\": \"Membresia creada en la sustentacion\",\n  \"precioMensual\": 60,\n  \"duracionMeses\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "10 · 201 Recepcionista crea membresia",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenRecepcionista}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/membresias",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Video {{$randomInt}}\",\n  \"descripcion\": \"Membresia creada en la sustentacion\",\n  \"precioMensual\": 60,\n  \"duracionMeses\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) pm.collectionVariables.set('idMembresia', pm.response.json().idMembresia);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "11 · 204 Actualizar la membresia creada",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenRecepcionista}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{gateway}}/membresias/{{idMembresia}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Video actualizada {{$randomInt}}\",\n  \"descripcion\": \"Actualizada por el gateway\",\n  \"precioMensual\": 75,\n  \"duracionMeses\": 1,\n  \"activo\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "12 · 204 Eliminar la membresia creada",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenRecepcionista}}"
+              }
+            ],
+            "url": "{{gateway}}/membresias/{{idMembresia}}"
+          }
+        },
+        {
+          "name": "13 · 404 Membresia que no existe",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenRecepcionista}}"
+              }
+            ],
+            "url": "{{gateway}}/membresias/999"
+          }
+        },
+        {
+          "name": "14 · 200 Entrenadores (microservicio 2)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenSocio}}"
+              }
+            ],
+            "url": "{{gateway}}/entrenadores"
+          }
+        },
+        {
+          "name": "15 · 200 Entrenador por id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenSocio}}"
+              }
+            ],
+            "url": "{{gateway}}/entrenadores/4"
+          }
+        },
+        {
+          "name": "16 · 404 Entrenador que no existe",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenSocio}}"
+              }
+            ],
+            "url": "{{gateway}}/entrenadores/99"
+          }
+        },
+        {
+          "name": "17 · 401 Entrenadores sin token (lo corta el gateway)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{gateway}}/entrenadores"
+          }
+        },
+        {
+          "name": "18 · 401 Directo al microservicio 2 sin token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{servicio2}}/api/entrenadores"
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Local (para el 502)",
+      "item": [
+        {
+          "name": "L1 · 200 Login local",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:5100/gateway/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"socio.demo@gimnasio.test\",\n  \"clave\": \"SocioDemo2026!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) pm.collectionVariables.set('tokenLocal', pm.response.json().token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "L2 · 200 Entrenadores local (servicio encendido)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenLocal}}"
+              }
+            ],
+            "url": "http://localhost:5100/gateway/entrenadores"
+          }
+        },
+        {
+          "name": "L3 · 502 Entrenadores local (cierra antes la ventana de EntrenadoresApi)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenLocal}}"
+              }
+            ],
+            "url": "http://localhost:5100/gateway/entrenadores"
+          }
+        },
+        {
+          "name": "L4 · 200 La API sigue funcionando",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenLocal}}"
+              }
+            ],
+            "url": "http://localhost:5100/gateway/membresias/1"
+          }
+        }
+      ]
+    }
+  ]
+}
