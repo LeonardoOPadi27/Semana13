@@ -13,6 +13,7 @@ services:
     name: gimnasio-api-s15
     runtime: docker
     plan: free
+    region: frankfurt
     dockerfilePath: ./Gimnasio.Api/Dockerfile
     dockerContext: .
     envVars:
@@ -24,6 +25,7 @@ services:
     name: gimnasio-entrenadores-s15
     runtime: docker
     plan: free
+    region: frankfurt
     dockerfilePath: ./EntrenadoresApi/Dockerfile
     dockerContext: .
     envVars:
@@ -33,6 +35,7 @@ services:
     name: gimnasio-gateway-s15
     runtime: docker
     plan: free
+    region: frankfurt
     dockerfilePath: ./GatewayApi/Dockerfile
     dockerContext: .
     envVars:
