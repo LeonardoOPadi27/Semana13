@@ -5,21 +5,21 @@
       "UpstreamHttpMethod": [ "POST", "GET" ],
       "DownstreamPathTemplate": "/api/auth/{everything}",
       "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [ { "Host": "gimnasio-api-s15.onrender.com", "Port": 443 } ]
+      "DownstreamHostAndPorts": [ { "Host": "gimnasio-api-s15-aeyf.onrender.com", "Port": 443 } ]
     },
     {
       "UpstreamPathTemplate": "/gateway/membresias{everything}",
       "UpstreamHttpMethod": [ "GET" ],
       "DownstreamPathTemplate": "/api/membresias{everything}",
       "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [ { "Host": "gimnasio-api-s15.onrender.com", "Port": 443 } ]
+      "DownstreamHostAndPorts": [ { "Host": "gimnasio-api-s15-aeyf.onrender.com", "Port": 443 } ]
     },
     {
       "UpstreamPathTemplate": "/gateway/membresias{everything}",
       "UpstreamHttpMethod": [ "POST", "PUT", "DELETE" ],
       "DownstreamPathTemplate": "/api/membresias{everything}",
       "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [ { "Host": "gimnasio-api-s15.onrender.com", "Port": 443 } ],
+      "DownstreamHostAndPorts": [ { "Host": "gimnasio-api-s15-aeyf.onrender.com", "Port": 443 } ],
       "AuthenticationOptions": { "AuthenticationProviderKeys": [ "Bearer" ] }
     },
     {
@@ -27,14 +27,14 @@
       "UpstreamHttpMethod": [ "GET" ],
       "DownstreamPathTemplate": "/api/socios{everything}",
       "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [ { "Host": "gimnasio-api-s15.onrender.com", "Port": 443 } ]
+      "DownstreamHostAndPorts": [ { "Host": "gimnasio-api-s15-aeyf.onrender.com", "Port": 443 } ]
     },
     {
       "UpstreamPathTemplate": "/gateway/socios{everything}",
       "UpstreamHttpMethod": [ "POST", "PUT", "DELETE" ],
       "DownstreamPathTemplate": "/api/socios{everything}",
       "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [ { "Host": "gimnasio-api-s15.onrender.com", "Port": 443 } ],
+      "DownstreamHostAndPorts": [ { "Host": "gimnasio-api-s15-aeyf.onrender.com", "Port": 443 } ],
       "AuthenticationOptions": { "AuthenticationProviderKeys": [ "Bearer" ] }
     },
     {
@@ -42,11 +42,11 @@
       "UpstreamHttpMethod": [ "GET" ],
       "DownstreamPathTemplate": "/api/entrenadores{everything}",
       "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [ { "Host": "gimnasio-entrenadores-s15.onrender.com", "Port": 443 } ],
+      "DownstreamHostAndPorts": [ { "Host": "gimnasio-entrenadores-s15-9eng.onrender.com", "Port": 443 } ],
       "AuthenticationOptions": { "AuthenticationProviderKeys": [ "Bearer" ] }
     }
   ],
   "GlobalConfiguration": {
-    "BaseUrl": "https://gimnasio-gateway-s15.onrender.com"
+    "BaseUrl": "https://gimnasio-gateway-s15-2hik.onrender.com"
   }
 }
